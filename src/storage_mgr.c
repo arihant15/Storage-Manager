@@ -119,6 +119,7 @@ RC readFirstBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	{
 		memPage = memPage + fgetc(fHandle->mgmtInfo);
 	}
+	fHandle->curPagePos = ftell(fHandle->mgmtInfo)/PAGE_SIZE;
 	return RC_OK;
 }
 
