@@ -2,8 +2,6 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
-char *buffer;
-buffer = (char *)malloc(PAGE_SIZE);
 
 /* manipulating page files */
 int main()
@@ -125,7 +123,6 @@ RC readFirstBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	}
 	fHandle->curPagePos = ftell(fHandle->mgmtInfo)/PAGE_SIZE;
 	return RC_OK;
-	// not reading anything
 }
 
 RC readPreviousBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
@@ -133,12 +130,13 @@ RC readPreviousBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
  int i;
         if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
                 return RC_READ_NON_EXISTING_PAGE;
-	if(fseek(fHandle->mgmtInfo , -PAGE_SIZE , fHandle->curPagePos)==NULL)
+	if(fseek(fHandle->mgmtInfo , -PAGE_SIZE , SEEK_CUR)!=0)
 		return RC_READ_NON_EXISTING_PAGE;
 	else
 		if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo)==-1)
-		return RC_READ_FAILED;
+		return RC_READ_NON_EXISTING_PAGE;
 		else
+		fHandle->curPagePos = ftell(fHandle->mgmtInfo)/PAGE_SIZE;
 		return RC_OK;
 }
 RC readCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
@@ -146,12 +144,13 @@ RC readCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
  int i;
         if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
                 return RC_READ_NON_EXISTING_PAGE;
-        if(fseek(fHandle->mgmtInfo , 0 , fHandle->curPagePos)==NULL)
+        if(fseek(fHandle->mgmtInfo , 0 , SEEK_CUR)!=0)
                 return RC_READ_NON_EXISTING_PAGE;
         else
                 if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo)==-1)
-                return RC_READ_FAILED;
+                return RC_READ_NON_EXISTING_PAGE;
                 else
+		fHandle->curPagePos = ftell(fHandle->mgmtInfo)/PAGE_SIZE;
                 return RC_OK;
 
 }
@@ -160,12 +159,13 @@ RC readNextBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
  int i;
         if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
                 return RC_READ_NON_EXISTING_PAGE;
-        if(fseek(fHandle->mgmtInfo , PAGE_SIZE , fHandle->curPagePos)==NULL)
+        if(fseek(fHandle->mgmtInfo , PAGE_SIZE , SEEK_CUR)!=0)
                 return RC_READ_NON_EXISTING_PAGE;
         else
                 if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo)==-1)
-                return RC_READ_FAILED;
+                return RC_READ_NON_EXISTING_PAGE;
                 else
+		fHandle->curPagePos = ftell(fHandle->mgmtInfo)/PAGE_SIZE;
                 return RC_OK;
 }
 
@@ -174,12 +174,13 @@ RC readLastBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
  int i;
         if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
                 return RC_READ_NON_EXISTING_PAGE;
-        if(fseek(fHandle->mgmtInfo , -PAGE_SIZE , SEEK_END)==NULL)
+        if(fseek(fHandle->mgmtInfo , -PAGE_SIZE , SEEK_END)!=0)
                 return RC_READ_NON_EXISTING_PAGE;
         else
                 if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo)==-1)
-                return RC_READ_FAILED;
+                return RC_READ_NON_EXISTING_PAGE;
                 else
+		fHandle->curPagePos = ftell(fHandle->mgmtInfo)/PAGE_SIZE;
                 return RC_OK;
 }
 
