@@ -2,6 +2,8 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
+char *buffer;
+buffer = (char *)malloc(PAGE_SIZE);
 
 /* manipulating page files */
 int main()
@@ -67,7 +69,8 @@ RC openPageFile (char *fileName, SM_FileHandle *fHandle)
 	int fileSize = fileStat.st_size;
 	fHandle->fileName = fileName;
 	fHandle->totalNumPages = fileSize/PAGE_SIZE;
-	fHandle->curPagePos = fseek(fp,0,SEEK_SET);
+	fHandle->curPagePos = fseek(fp,0,SEEK_SET);//should point to the
+	//beginning of the current page
 	fHandle->mgmtInfo = fp;
 	return RC_OK;
 
@@ -111,6 +114,7 @@ int getBlockPos (SM_FileHandle *fHandle)
 
 RC readFirstBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 {
+	//define a string buffer to read the data into
 	int i;
 	if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
 		return RC_READ_NON_EXISTING_PAGE;
@@ -121,15 +125,67 @@ RC readFirstBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	}
 	fHandle->curPagePos = ftell(fHandle->mgmtInfo)/PAGE_SIZE;
 	return RC_OK;
+	// not reading anything
 }
 
-RC readPreviousBlock (SM_FileHandle *fHandle, SM_PageHandle memPage);
-RC readCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage);
-RC readNextBlock (SM_FileHandle *fHandle, SM_PageHandle memPage);
-RC readLastBlock (SM_FileHandle *fHandle, SM_PageHandle memPage);
+RC readPreviousBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
+{
+ int i;
+        if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
+                return RC_READ_NON_EXISTING_PAGE;
+	if(fseek(fHandle->mgmtInfo , -PAGE_SIZE , fHandle->curPagePos)==NULL)
+		return RC_READ_NON_EXISTING_PAGE;
+	else
+		if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo)==-1)
+		return RC_READ_FAILED;
+		else
+		return RC_OK;
+}
+RC readCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
+{
+ int i;
+        if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
+                return RC_READ_NON_EXISTING_PAGE;
+        if(fseek(fHandle->mgmtInfo , 0 , fHandle->curPagePos)==NULL)
+                return RC_READ_NON_EXISTING_PAGE;
+        else
+                if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo)==-1)
+                return RC_READ_FAILED;
+                else
+                return RC_OK;
+
+}
+RC readNextBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
+{
+ int i;
+        if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
+                return RC_READ_NON_EXISTING_PAGE;
+        if(fseek(fHandle->mgmtInfo , PAGE_SIZE , fHandle->curPagePos)==NULL)
+                return RC_READ_NON_EXISTING_PAGE;
+        else
+                if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo)==-1)
+                return RC_READ_FAILED;
+                else
+                return RC_OK;
+}
+
+RC readLastBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
+{
+ int i;
+        if(fHandle == NULL || fopen(fHandle->fileName,"r") == NULL)
+                return RC_READ_NON_EXISTING_PAGE;
+        if(fseek(fHandle->mgmtInfo , -PAGE_SIZE , SEEK_END)==NULL)
+                return RC_READ_NON_EXISTING_PAGE;
+        else
+                if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo)==-1)
+                return RC_READ_FAILED;
+                else
+                return RC_OK;
+}
 
 /* writing blocks to a page file */
 RC writeBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage);
+        
 RC writeCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage);
 
 RC appendEmptyBlock (SM_FileHandle *fHandle);
