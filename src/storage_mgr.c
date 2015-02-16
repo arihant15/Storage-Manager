@@ -1,9 +1,6 @@
 #include "storage_mgr.h"
 #include <sys/stat.h>
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
-
 
 /* manipulating page files */
 /*
@@ -244,7 +241,7 @@ RC readCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	if((fHandle->curPagePos) > (fHandle->totalNumPages-1))
 		return RC_READ_NON_EXISTING_PAGE;
 
-	fseek(fHandle->mgmtInfo , (fHandle->curPagePos)*PAGE_SIZE , SEEK_CUR);
+	fseek(fHandle->mgmtInfo , (fHandle->curPagePos)*PAGE_SIZE , SEEK_SET);
 	
     if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo) != PAGE_SIZE)
     	return RC_FILE_READ_ERROR;
@@ -337,9 +334,9 @@ RC writeCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 		return RC_WRITE_FAILED;
  	
  	fp = fopen(fHandle->fileName,"r");
+ 	fHandle->curPagePos = (ftell(fHandle->mgmtInfo)/PAGE_SIZE);
  	fseek(fp, (fHandle->curPagePos)*PAGE_SIZE , SEEK_SET);
  	fHandle->mgmtInfo = fp;
-    fHandle->curPagePos = (ftell(fHandle->mgmtInfo)/PAGE_SIZE);
     return RC_OK;
 }
 
