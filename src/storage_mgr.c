@@ -6,7 +6,7 @@
 
 
 /* manipulating page files */
-
+/*
 int main()
 {
 	SM_FileHandle fh;
@@ -51,7 +51,7 @@ int main()
 	
 	for (i=0; i < PAGE_SIZE; i++)
     	ph[i] = (i % 10) + '0';
-	a = writeBlock(2,&fh,ph);
+	a = writeBlock(0,&fh,ph);
 	printf("RC: %d write block\n", a);
 
 	for (i=0; i < PAGE_SIZE; i++)
@@ -68,13 +68,21 @@ int main()
 	a = readNextBlock(&fh, ph);
 	printf("RC: %d read Next block\n", a);
 
-	a = ensureCapacity(10,&fh);
-	printf("RC: %d Ensure Capacity!!\n", a);
+	//a = ensureCapacity(10,&fh);
+	//printf("RC: %d Ensure Capacity!!\n", a);
 
 	a = readNextBlock(&fh, ph);
 	printf("RC: %d read Next block\n", a);
 
-}
+	a = appendEmptyBlock(&fh);
+	printf("RC: %d Append Empty Block!!\n", a);
+
+	for (i=0; i < PAGE_SIZE; i++)
+    	ph[i] = '1';
+	a = writeCurrentBlock(&fh,ph);
+	printf("RC: %d write current block\n", a);
+
+}*/
 
 void initStorageManager (void)
 {
@@ -233,10 +241,10 @@ RC readCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	if(fopen(fHandle->fileName,"r") == NULL)
 		return RC_FILE_NOT_FOUND;
 
-	if((fHandle->curPagePos-1) > fHandle->totalNumPages)
+	if((fHandle->curPagePos) > (fHandle->totalNumPages-1))
 		return RC_READ_NON_EXISTING_PAGE;
 
-	fseek(fHandle->mgmtInfo , -PAGE_SIZE , SEEK_CUR);
+	fseek(fHandle->mgmtInfo , (fHandle->curPagePos)*PAGE_SIZE , SEEK_CUR);
 	
     if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo) != PAGE_SIZE)
     	return RC_FILE_READ_ERROR;
@@ -254,10 +262,10 @@ RC readNextBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	if(fopen(fHandle->fileName,"r") == NULL)
 		return RC_FILE_NOT_FOUND;
 
-	if(fHandle->curPagePos > fHandle->totalNumPages)
+	if(fHandle->curPagePos > (fHandle->totalNumPages-1))
 		return RC_READ_NON_EXISTING_PAGE;
 
-    fseek(fHandle->mgmtInfo , fHandle->curPagePos * PAGE_SIZE , SEEK_CUR);
+    fseek(fHandle->mgmtInfo , fHandle->curPagePos * PAGE_SIZE , SEEK_SET);
 
     if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo) != PAGE_SIZE)
     	return RC_FILE_READ_ERROR;
@@ -303,10 +311,9 @@ RC writeBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage)
 		return RC_WRITE_FAILED;
 	
 	fp = fopen(fHandle->fileName,"r");
-	fseek(fp , pageNum*PAGE_SIZE , SEEK_SET);
+	fseek(fp , (pageNum+1)*PAGE_SIZE , SEEK_SET);
 	fHandle->mgmtInfo = fp;
 	fHandle->curPagePos = (ftell(fHandle->mgmtInfo)/PAGE_SIZE);
-	fseek(fp, 0 , SEEK_END);
 	fHandle->totalNumPages = (ftell(fp)/PAGE_SIZE);
 	return RC_OK;
 }
@@ -319,9 +326,12 @@ RC writeCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	if(fopen(fHandle->fileName,"r") == NULL)
 		return RC_FILE_NOT_FOUND;
 
+	if(fHandle->curPagePos > (fHandle->totalNumPages -1))
+		return RC_WRITE_OUT_OF_BOUND_INDEX;
+
     FILE *fp;
 	fp = fopen(fHandle->fileName,"r+");
-	fseek(fp, (fHandle->curPagePos-1)*PAGE_SIZE , SEEK_SET);
+	fseek(fp, (fHandle->curPagePos)*PAGE_SIZE , SEEK_SET);
     
  	if(fwrite(memPage,PAGE_SIZE,1,fp) != 1)
 		return RC_WRITE_FAILED;
@@ -336,7 +346,7 @@ RC writeCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 RC appendEmptyBlock (SM_FileHandle *fHandle)
 {
 	int i;
-	
+
 	if (fHandle == NULL)
 		return RC_FILE_HANDLE_NOT_INIT;
 
@@ -355,8 +365,6 @@ RC appendEmptyBlock (SM_FileHandle *fHandle)
 	}
 
 	fHandle->mgmtInfo = fp;
-    //fHandle->curPagePos = (ftell(fHandle->mgmtInfo)/PAGE_SIZE);
-    fseek(fp, 0 , SEEK_END);
 	fHandle->totalNumPages = (ftell(fp)/PAGE_SIZE);
 	return RC_OK;
 }
