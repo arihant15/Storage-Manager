@@ -1,31 +1,32 @@
 			              Assignment 1: Storage Manager
 
 Project Modules
----------------------------------------------------------
+--------------------------------------------------------------------------------------
 C source files: storage_mgr.c, dberror.c, test_assign1_1.c,test_assign1_2.c
 Header files: storage_mgr.h, dberror.h, test_helper.h
 
 Team members
 ---------------------------------------
-1)Anuja Velankar( avelanka@hawk.iit.edu)
-2)Arihant Nagarajan(anagara6@hawk.iit.edu
-3)Sher  Syed (ssher@hawk.iit.edu)
-4)Sonaki Bengali(sbengal1@hawk.iit.edu)
+1)Anuja Velankar  (avelanka@hawk.iit.edu, CWID: A20315513)
+2)Arihant Nagarajan (anagara6@hawk.iit.edu, CWID: A20334121)
+3)Sher Syed (ssher@hawk.iit.edu, CWID:A20318494)
+4)Sonaki Bengali (sbengal1@hawk.iit.edu, CWID: A20279865)
 
 
 Aim:
------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 The goal of this assignment is to implement a storage manager - a module that 
 is capable of reading blocks from a file on disk into memory and writing blocks from 
 memory to a file on disk. The storage manager deals with pages (blocks) of fixed 
-size (PAGE_SIZE). We have written functions to create, open and close files and read, write,append pages in the file. 
+size (PAGE_SIZE). We have written functions to create, open and close files and read,
+write,append pages in the file. 
 Read  functions can also read current block ,next block, previous block etc.
 
 Instructions to run the code
 ----------------------------
-1) Download source code from the Git repository using "git clone <git URL>"``
+1) Extract the source code from zip folder "Storage-Manager-master.zip"
 2) Open the command prompt.
-3) Go to the path where the downloaded files are present.
+3) Go to the path where the extracted files are present.
 4) Run the below command:
    make
 5) Run the below command for testing test_assign1.c:
@@ -125,9 +126,8 @@ ensureCapacity()
 Checks if the file has capacity to to accomodate numberofpages. If the file does not sufficient pages, using 'appendEmptyBlock' function, add more pages.
 Returns error code if: i)File handle is null ii)File does not exist or is unable to open in 'read' mode iii) Current page position in file handler points to non-existing page  
 
-Error codes
--------------
-
+Additional Error codes
+--------------------
 We have defined some new error codes and corresponding error 
 messages in  dberror.h file which are mentioned below:
 
