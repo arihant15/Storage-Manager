@@ -24,7 +24,7 @@ Read  functions can also read current block ,next block, previous block etc.
 
 Instructions to run the code
 ----------------------------
-1) Extract the source code from zip folder "Storage-Manager-master.zip"
+1) Extract the source code from zip folder "assign1_avelanka.zip"
 2) Open the command prompt.
 3) Go to the path where the extracted files are present.
 4) Run the below command:
