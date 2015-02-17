@@ -80,7 +80,7 @@ int main()
 	printf("RC: %d write current block\n", a);
 
 }*/
-//just a minor initialization function, doesnt do anything yet
+//just a minor initialization function, doesn't do anything yet
 void initStorageManager (void)
 {
 	printf("Storage Manager Initialized!!\n");
@@ -102,7 +102,7 @@ RC createPageFile (char *fileName)
 	if(ops == 'y' || fp == NULL)
 	{
 		fp = fopen(fileName, "w");	
-		fseek(fp , 0 , SEEK_SET);//seeking to the begining of the file
+		fseek(fp , 0 , SEEK_SET);//seeking to the beginning of the file
 		//filling the page of page size 4096 bytes
 		for(i = 0; i < PAGE_SIZE; i++)
 		{
@@ -123,7 +123,7 @@ RC openPageFile(char *fileName, SM_FileHandle *fHandle)
 	FILE *fp;
 	fp = fopen(fileName, "r");
 
-	if(fp == NULL)// if file not present ie NULL
+	if(fp == NULL)// if file not present i.e NULL
 		return RC_FILE_NOT_FOUND;
 	//finding the file size
 	struct stat fileStat;
@@ -138,7 +138,7 @@ RC openPageFile(char *fileName, SM_FileHandle *fHandle)
 	return RC_OK;
 
 }
-//closing te file
+//closing the file
 RC closePageFile (SM_FileHandle *fHandle)
 {
 	if (fHandle == NULL)
@@ -174,7 +174,7 @@ RC readBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage)
 	if(pageNum > fHandle->totalNumPages)//checking if its an invalid page number
 		return RC_READ_NON_EXISTING_PAGE;
 
-	fseek(fHandle->mgmtInfo , pageNum*PAGE_SIZE , SEEK_SET);//seeking to a perticular block with respect to the page number
+	fseek(fHandle->mgmtInfo , pageNum*PAGE_SIZE , SEEK_SET);//seeking to a particular block with respect to the page number
 
 	if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo) != PAGE_SIZE)// reading a block of size 4096 bytes
 		return RC_FILE_READ_ERROR;
@@ -241,7 +241,7 @@ RC readCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 
 	if((fHandle->curPagePos) > (fHandle->totalNumPages-1))
 		return RC_READ_NON_EXISTING_PAGE;
-	//seeking to the curent page with respect to the start of the file
+	//seeking to the current page with respect to the start of the file
 	fseek(fHandle->mgmtInfo , (fHandle->curPagePos)*PAGE_SIZE , SEEK_SET);
 	//reading a block of file
     if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo) != PAGE_SIZE)
@@ -267,7 +267,7 @@ RC readNextBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	//reading from the file
     if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo) != PAGE_SIZE)
     	return RC_FILE_READ_ERROR;
-	//setting the current postion of the pointer
+	//setting the current position of the pointer
 	fHandle->curPagePos = (ftell(fHandle->mgmtInfo)/PAGE_SIZE);
     return RC_OK;
 }
@@ -284,7 +284,7 @@ RC readLastBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 	//reads the last page to a buffer
     if(fread(memPage, 1, PAGE_SIZE, fHandle->mgmtInfo) != PAGE_SIZE)
     	return RC_FILE_READ_ERROR;
-	//sets the current postion of the pointer
+	//sets the current position of the pointer
 	fHandle->curPagePos = (ftell(fHandle->mgmtInfo)/PAGE_SIZE);
     return RC_OK;
 }
@@ -304,7 +304,7 @@ RC writeBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage)
 	FILE *fp;
 	fp = fopen(fHandle->fileName,"r+");
 	fseek(fp , pageNum*PAGE_SIZE , SEEK_SET);
-	//seeks to the perticular page with respect to the start of the file
+	//seeks to the particular page with respect to the start of the file
 	if(fwrite(memPage,PAGE_SIZE,1,fp) != 1)
 		return RC_WRITE_FAILED;
 	//writes the data
@@ -330,11 +330,11 @@ RC writeCurrentBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 
     FILE *fp;
 	fp = fopen(fHandle->fileName,"r+");
-	fseek(fp, (fHandle->curPagePos)*PAGE_SIZE , SEEK_SET);// seeks to the current page wrt to start of the file
+	fseek(fp, (fHandle->curPagePos)*PAGE_SIZE , SEEK_SET);// seeks to the current page w.r.t to start of the file
     
- 	if(fwrite(memPage,PAGE_SIZE,1,fp) != 1)//writes the data from the buffer to th file
+ 	if(fwrite(memPage,PAGE_SIZE,1,fp) != 1)//writes the data from the buffer to the file
 		return RC_WRITE_FAILED;
- 	//sets the fhandle variables
+ 	//sets the fHandle variables
  	fp = fopen(fHandle->fileName,"r");
  	fHandle->curPagePos = (ftell(fHandle->mgmtInfo)/PAGE_SIZE);
  	fseek(fp, (fHandle->curPagePos)*PAGE_SIZE , SEEK_SET);
