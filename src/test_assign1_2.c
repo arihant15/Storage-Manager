@@ -6,8 +6,6 @@
 #include "storage_mgr.h"
 #include "dberror.h"
 #include "test_helper.h"
-#include "dberror.c"
-#include "storage_mgr.c"
 
 // test name
 char *testName;
