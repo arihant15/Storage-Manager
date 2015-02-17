@@ -162,7 +162,7 @@ void testMultiPageContent(void)
   printf("Read Current block\n");
   
   // destroy new page file
-  //TEST_CHECK(destroyPageFile (TESTPF));  
+  TEST_CHECK(destroyPageFile (TESTPF));  
   
   TEST_DONE();
 }
