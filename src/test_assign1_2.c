@@ -6,8 +6,6 @@
 #include "storage_mgr.h"
 #include "dberror.h"
 #include "test_helper.h"
-#include "dberror.c"
-#include "storage_mgr.c"
 
 // test name
 char *testName;
@@ -152,15 +150,15 @@ void testMultiPageContent(void)
   printf("Write Current block\n");
 
   TEST_CHECK(readPreviousBlock(&fh, ph));
-  //for (i=0; i < PAGE_SIZE; i++)
-  //  ASSERT_TRUE((ph[i] == '0'), "character in page read from disk is the one we expected.");
+  for (i=0; i < PAGE_SIZE; i++)
+    ASSERT_TRUE((ph[i] == '0'), "character in page read from disk is the one we expected.");
   printf("Read Previous block\n");
 
   TEST_CHECK(appendEmptyBlock(&fh));
   printf("Appending Empty block\n");
   TEST_CHECK(readCurrentBlock(&fh, ph));
-  //for (i=0; i < PAGE_SIZE; i++)
-  //  ASSERT_TRUE((ph[i] == 0), "expected zero byte in first page of freshly initialized page");
+  for (i=0; i < PAGE_SIZE; i++)
+    ASSERT_TRUE((ph[i] == 0), "expected zero byte in first page of freshly initialized page");
   printf("Read Current block\n");
   
   // destroy new page file
